@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 @Repository
 @Getter
 @EnableConfigurationProperties
-public class FileCustomerRepository implements CustomerRepository, InitializingBean, DisposableBean {
+public class FileCustomerRepository
+        implements CustomerRepository, InitializingBean, DisposableBean {
 
     public FileCustomerRepository(FileProperty fileProperty) {
         this.filePath = fileProperty.getBlacklist();
@@ -87,7 +88,8 @@ public class FileCustomerRepository implements CustomerRepository, InitializingB
 
     @Override
     public void deleteByEmail(String email) {
-        Optional<Customer> findEmailCustomer = storage.values().stream().filter(customer -> customer.getEmail().equals(email)).findFirst();
+        Optional<Customer> findEmailCustomer =
+                storage.values().stream().filter(customer -> customer.getEmail().equals(email)).findFirst();
         if (findEmailCustomer.isPresent()) {
             storage.remove(findEmailCustomer.get().getCustomerId());
         } else {
@@ -106,6 +108,9 @@ public class FileCustomerRepository implements CustomerRepository, InitializingB
     }
 
     @Override
+    public void delete(UUID customerId) {}
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         this.storage = fileReadToCustomerMap();
     }
@@ -114,13 +119,14 @@ public class FileCustomerRepository implements CustomerRepository, InitializingB
         List<String> customerStringList = FileUtil.readFileByList(filePath);
         Map<UUID, Customer> customerMap = new LinkedHashMap<>();
 
-        for(String customerString : customerStringList) {
+        for (String customerString : customerStringList) {
             String[] split = customerString.split(",");
-            UUID customerId= UUID.fromString(split[0]);
+            UUID customerId = UUID.fromString(split[0]);
             String name = split[1];
             String email = split[2];
             CustomerType customerType = CustomerType.find(split[3]);
-            LocalDateTime createdAt =  LocalDateTime.parse(split[4], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+            LocalDateTime createdAt =
+                    LocalDateTime.parse(split[4], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
             Customer customer = new Customer(customerId, name, email, createdAt, customerType);
             customerMap.put(customerId, customer);
         }
@@ -129,13 +135,20 @@ public class FileCustomerRepository implements CustomerRepository, InitializingB
 
     private void fileWriteByCustomerMap() {
         StringBuilder customerMapToString = new StringBuilder();
-        storage.values().stream().forEach(customer -> customerMapToString.append(customerToCsvString(customer) + "\n"));
+        storage.values().stream()
+                .forEach(customer -> customerMapToString.append(customerToCsvString(customer) + "\n"));
         FileUtil.fileWriteLine(filePath, customerMapToString.toString());
     }
 
     public String customerToCsvString(Customer customer) {
-        return customer.getCustomerId().toString() + "," + customer.getName() + "," + customer.getEmail() +
-                customer.getCustomerType().getType() + ","  + customer.getCreatedAt();
+        return customer.getCustomerId().toString()
+                + ","
+                + customer.getName()
+                + ","
+                + customer.getEmail()
+                + customer.getCustomerType().getType()
+                + ","
+                + customer.getCreatedAt();
     }
 
     @Override

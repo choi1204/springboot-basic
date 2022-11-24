@@ -1,0 +1,32 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>KDT - Voucher</title>
+</head>
+<body class="container-fluid">
+
+<h2>Customer Detail</h2>
+<form th:action="@{/voucher/delete/{voucherId} (voucherId = ${voucher.voucherId})}" method = "post">
+    <div class="mb-3">
+        <label for="voucherId" class="form-label">VoucherId</label>
+        <h4 th:text="${voucher.voucherId}" id="voucherId"></h4>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">VoucherType</label>
+        <h4 th:text="${voucher.voucherType}" id="exampleInputEmail1"></h4>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">CreatedAt</label>
+        <h4 th:text="${voucher.createdAt}" id="exampleInputPassword1"></h4>
+    </div>
+    <button type = "submit" class="btn btn-primary btn-lg" role="button"  aria-disabled="true">Delete</button>
+    <a th:href = "@{/voucher}"class="btn btn-secondary btn-lg" role="button" aria-disabled="true">Return</a>
+    <a th:href = "@{/wallet/voucher/{voucherId} (voucherId = ${voucher.voucherId})}" class="btn btn-secondary btn-lg" role="button" aria-disabled="true">Has Wallet</a>
+
+</form>

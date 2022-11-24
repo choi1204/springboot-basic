@@ -1,61 +1,32 @@
 package org.programs.kdt.Wallet;
 
 import lombok.RequiredArgsConstructor;
-import org.programs.kdt.Customer.Customer;
-import org.programs.kdt.Customer.CustomerService;
 import org.programs.kdt.Exception.DuplicationException;
 import org.programs.kdt.Exception.EntityNotFoundException;
-import org.programs.kdt.Voucher.domain.Voucher;
-import org.programs.kdt.Voucher.service.VoucherService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.programs.kdt.Exception.ErrorCode.*;
+import static org.programs.kdt.Exception.ErrorCode.DUPLICATION_WALLET_ID;
 
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class WalletService {
 
     private final WalletRepository walletRepository;
 
-    private final CustomerService customerService;
+    @Transactional
+    public Wallet create(Wallet wallet) {
 
-    private final VoucherService voucherService;
-
-
-    public Wallet testCreate(UUID customerId, UUID voucherId, UUID walletId) {
-        Voucher retrieveVoucher = voucherService.findById(voucherId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_VOUCHER_ID));
-        Customer retrieveCustomer = customerService.findById(customerId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_CUSTOMER_ID));
-
-        Wallet wallet = new Wallet(retrieveVoucher, retrieveCustomer, walletId, LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         checkDuplicationWalletId(wallet.getWalletId());
 
         walletRepository.insert(wallet);
         return wallet;
-    }
-
-    public Wallet create(UUID customerId, UUID voucherId) {
-        Voucher retrieveVoucher = voucherService.findById(voucherId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_VOUCHER_ID));
-        Customer retrieveCustomer = customerService.findById(customerId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_CUSTOMER_ID));
-        Wallet wallet = new Wallet(retrieveVoucher, retrieveCustomer, UUID.randomUUID(), LocalDateTime.now());
-        checkDuplicationWalletId(wallet.getWalletId());
-
-        walletRepository.insert(wallet);
-        return wallet;
-    }
-
-    private Optional<Customer> checkFoundCustomerId(UUID customerId) {
-        boolean isId = customerService.existId(customerId);
-        if (!isId) {
-            throw new EntityNotFoundException(NOT_FOUND_CUSTOMER_ID);
-        }
-        return customerService.findById(customerId);
     }
 
 
@@ -64,6 +35,7 @@ public class WalletService {
         return walletRepository.findAll();
     }
 
+    @Transactional
     public void delete(UUID walletId) {
         walletRepository.deleteById(walletId);
     }
@@ -75,18 +47,18 @@ public class WalletService {
         return walletRepository.findByCustomerId(customerId);
     }
 
-    public Wallet findByWalletId(UUID walletId) {
-        checkFoundWalletId(walletId);
-        return walletRepository.findById(walletId).get();
+    public Optional<Wallet> findByWalletId(UUID walletId) {
+        return walletRepository.findById(walletId);
     }
 
     public List<Wallet> findByCustomerEmail(String email) {
         return walletRepository.findByCustomerEmail(email);
     }
+
+    @Transactional
     public void deleteAll() {
         walletRepository.deleteAll();
     }
-
 
     private void checkFoundWalletId(UUID walletId) {
         boolean isId = walletRepository.existWalletId(walletId);
@@ -102,14 +74,17 @@ public class WalletService {
         }
     }
 
-
+    @Transactional
     public void deleteByCustomerId(UUID customerId) {
-        checkFoundCustomerId(customerId);
         walletRepository.deleteByCustomerId(customerId);
     }
-
+    @Transactional
     public void deleteById(UUID walletId) {
         checkFoundWalletId(walletId);
         walletRepository.deleteById(walletId);
+    }
+
+    public void deleteByVoucherId(UUID voucherId) {
+        walletRepository.deleteByVoucherId(voucherId);
     }
 }

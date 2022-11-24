@@ -3,6 +3,7 @@ package org.programs.kdt.Voucher.repository;
 import org.programs.kdt.Voucher.domain.Voucher;
 import org.programs.kdt.Voucher.domain.VoucherType;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,4 +17,5 @@ public interface VoucherRepository {
     void delete(UUID uuid);
     List<Voucher> findByType(VoucherType voucherType);
     boolean existId(UUID customerId);
+    List<Voucher> findByLocalDate(LocalDate searchTime);
 }

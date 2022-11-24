@@ -1,4 +1,4 @@
-package org.programs.kdt;
+package org.programs.kdt.App;
 
 import lombok.RequiredArgsConstructor;
 import org.programs.kdt.Command.VoucherMenu;
@@ -77,7 +77,7 @@ public class VoucherApp {
     private void voucherDeleteProcess() {
         UUID uuid = console.inputUUID("바우처 id를 입력해주세요.");
         try {
-        voucherService.delete(uuid);
+            voucherService.delete(uuid);
         } catch (BusinessException e) {
             console.output(e.getMessage());
         }

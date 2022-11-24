@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.is;
 class FileCustomerRepositoryTest {
 
   @Configuration
-  @ComponentScan(basePackages = {"org.programs.kdt.Customer"})
+  @ComponentScan(basePackages = {"org.programs.kdt.Customer", "org.programs.kdt.Wallet"})
   static class Config {}
 
   @Autowired FileCustomerRepository fileCustomerRepository;

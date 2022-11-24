@@ -1,4 +1,4 @@
-package org.programs.kdt;
+package org.programs.kdt.App;
 
 import lombok.RequiredArgsConstructor;
 import org.programs.kdt.Command.CommandMenu;
@@ -19,10 +19,10 @@ public class App {
     private final CustomerApp customerApp;
     private final WalletApp walletApp;
 
-    public void run()  {
+    public void run() {
 
-        CommandMenu command =  CommandMenu.ERROR;
-        while(!command.equals(CommandMenu.EXIT)) {
+        CommandMenu command = CommandMenu.ERROR;
+        while (!command.equals(CommandMenu.EXIT)) {
             console.output(CommandMenu.toMenu());
             String input = console.input("명령어를 입력해주세요/");
             command = CommandMenu.findCommand(input);
@@ -50,6 +50,4 @@ public class App {
                 logger.error(INVALID_ENUM_TYPE.getMessage());
         }
     }
-
-
 }

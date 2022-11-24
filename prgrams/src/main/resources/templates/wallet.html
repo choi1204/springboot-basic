@@ -1,0 +1,51 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>KDT - Wallet</title>
+</head>
+<body class="container-fluid">
+
+<h2>Wallet</h2>
+<form th:action="@{/wallet/delete/{walletId} (walletId = ${wallet.walletId})}" method = "post">
+    <div class="mb-3">
+        <label for="walletId" class="form-label">VoucherId</label>
+        <h4 th:text="${wallet.walletId}" id="walletId"></h4>
+    </div>
+    <div class="mb-3">
+        VoucherId<br>
+        <h4 th:text="${wallet.voucherId}"></h4>
+    </div>
+    <div class="mb-3">
+        VoucherValue<br>
+        <h4 th:text="${wallet.voucherValue}"></h4>
+    </div>
+    <div class="mb-3">
+        VoucherType<br>
+        <h4 th:text="${wallet.voucherType}"></h4>
+    </div>
+    <div class="mb-3">
+        CustomerId<BR>
+        <h4 th:text="${wallet.customerId}"></h4>
+    </div>
+    <div class="mb-3">
+        CustomerName<br>
+        <h4 th:text="${wallet.customerName}"></h4>
+    </div>
+    <div class="mb-3">
+        CustomerEmail<br>
+        <h4 th:text="${wallet.customerEmail}"></h4>
+    </div>
+    <div class="mb-3">
+        CreatedAt<br>
+        <h4 th:text="${wallet.createdAt}"></h4>
+    </div>
+    <button type = "submit" class="btn btn-primary btn-lg" role="button"  aria-disabled="true">Delete</button>
+    <a th:href = "@{/wallet}"class="btn btn-secondary btn-lg" role="button" aria-disabled="true">Return</a>
+
+</form>

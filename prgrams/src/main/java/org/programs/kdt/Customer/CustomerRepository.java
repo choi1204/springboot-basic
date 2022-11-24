@@ -10,7 +10,6 @@ public interface CustomerRepository {
 
     Customer update(Customer customer);
 
-
     int count();
 
     List<Customer> findAll();
@@ -30,4 +29,6 @@ public interface CustomerRepository {
     boolean existEmail(String email);
 
     boolean existId(UUID customerId);
+
+    void delete(UUID customerId);
 }

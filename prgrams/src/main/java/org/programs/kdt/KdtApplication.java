@@ -8,7 +8,7 @@ public class KdtApplication {
 
 	public static void main(String[] args) {
 		var applicationContext = SpringApplication.run(KdtApplication.class, args);
-		applicationContext.getBean(App.class).run();
+//		applicationContext.getBean(App.class).run();
 	}
 
 }

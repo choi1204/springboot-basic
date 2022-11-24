@@ -16,6 +16,7 @@ public class MemoryCustomerRepository implements CustomerRepository {
 
     @Override
     public Customer insert(Customer customer) {
+        //가시성
         synchronized (this) {
             storage.put(customer.getCustomerId(), customer);
         }
@@ -87,5 +88,10 @@ public class MemoryCustomerRepository implements CustomerRepository {
     @Override
     public boolean existId(UUID customerId) {
         return storage.containsKey(customerId);
+    }
+
+    @Override
+    public void delete(UUID customerId) {
+
     }
 }

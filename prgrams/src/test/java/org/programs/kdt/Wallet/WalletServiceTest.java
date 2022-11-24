@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,13 +88,14 @@ class WalletServiceTest {
         customer = new Customer(UUID.randomUUID(), "choi", "choi@naver.com");
         voucherRepository.insert(voucher);
         customerRepository.insert(customer);
+        wallet = new Wallet(voucher, customer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
     }
 
     @Test
     @DisplayName("customer와 voucher를 통해 wallet을 생성할 수 있다.")
     @Order(1)
     public void creteWallet() {
-        wallet = walletService.testCreate(customer.getCustomerId(), voucher.getVoucherId(), UUID.randomUUID());
+        walletService.create(wallet);
 
         var retrieveWallet = walletService.findAll();
 
@@ -104,28 +106,30 @@ class WalletServiceTest {
     @Test
     @DisplayName("없는 voucherId로는 wallet를 만들지 못한다.")
     @Order(2)
+    @Disabled
     public void createWalletNotFoundVoucher() {
         VoucherType voucherType = VoucherType.PERCENT;
         Voucher anotherVoucher
                 = voucherType.createVoucher(UUID.randomUUID(), 20L, LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-
-        assertThrows(EntityNotFoundException.class, () -> walletService.testCreate(customer.getCustomerId(), anotherVoucher.getVoucherId(), UUID.randomUUID()));
+        Wallet newWallet = new Wallet(anotherVoucher, customer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        assertThrows(EntityNotFoundException.class, () -> walletService.create(newWallet));
     }
 
     @Test
     @DisplayName("없는 customerId로는 wallet를 만들지 못한다.")
     @Order(3)
+    @Disabled
     public void createWalletNotFoundCusomer() {
         Customer anotherCustomer = new Customer(UUID.randomUUID(), "choi", "choi@naver.com");
-
-        assertThrows(EntityNotFoundException.class, () -> walletService.testCreate(anotherCustomer.getCustomerId(), voucher.getVoucherId(), UUID.randomUUID()));
+        Wallet newWallet = new Wallet(voucher, anotherCustomer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        assertThrows(EntityNotFoundException.class, () -> walletService.create(newWallet));
     }
 
     @Test
     @DisplayName("똑같은 UUID의 wallet를 만들지 못한다.")
     @Order(4)
     public void createWalletDuplicate() {
-        assertThrows(DuplicationException.class, () -> walletService.testCreate(wallet.getCustomerId(), wallet.getVoucherId(), wallet.getWalletId()));
+        assertThrows(DuplicationException.class, () -> walletService.create(wallet));
     }
 
     @Test
@@ -147,7 +151,8 @@ class WalletServiceTest {
         Voucher anotherVoucher = voucherType.createVoucher(UUID.randomUUID(), 21L, LocalDateTime.now());
         voucherRepository.insert(anotherVoucher);
 
-        Wallet newWallet = walletService.testCreate(customer.getCustomerId(), anotherVoucher.getVoucherId(), UUID.randomUUID());
+        Wallet newWallet = new Wallet(anotherVoucher, customer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        walletService.create(newWallet);
         List<Wallet> retrieveWalletList = walletService.findByVoucherId(voucher.getVoucherId());
 
         assertThat(retrieveWalletList, hasItem(samePropertyValuesAs(wallet)));
@@ -174,7 +179,8 @@ class WalletServiceTest {
         Customer anotherCustomer = new Customer(UUID.randomUUID(), "choi2", "choi2@naver.com",LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         customerRepository.insert(anotherCustomer);
 
-        Wallet newWallet = walletService.testCreate(anotherCustomer.getCustomerId(), voucher.getVoucherId(), UUID.randomUUID());
+        Wallet newWallet = new Wallet(voucher, anotherCustomer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        walletService.create(newWallet);
         List<Wallet> retrieveWalletList =walletService.findByCustomerId(wallet.getCustomerId());
 
         assertThat(retrieveWalletList, hasItem(samePropertyValuesAs(wallet)));
@@ -192,11 +198,12 @@ class WalletServiceTest {
     }
 
     @Test
-    @DisplayName("없는 wallet id로 wallet을 조회할 수 없다.")
+    @DisplayName("없는 wallet id로 wallet을 조회하면 empty를 반환한다.")
     @Order(9)
     void findByIdError() {
         Wallet newWallet = new Wallet(voucher, customer, UUID.randomUUID(), LocalDateTime.now());
-        assertThrows(EntityNotFoundException.class,() -> walletService.findByWalletId(newWallet.getWalletId()));
+        Optional<Wallet> byWalletId = walletService.findByWalletId(newWallet.getWalletId());
+        assertThat(byWalletId.isEmpty(), is(true));
     }
 
     @Test
@@ -231,7 +238,8 @@ class WalletServiceTest {
         Customer anotherCustomer = new Customer(UUID.randomUUID(), "choi2", "choi12122@naver.com");
         customerRepository.insert(anotherCustomer);
 
-        Wallet newWallet = walletService.testCreate(anotherCustomer.getCustomerId(), voucher.getVoucherId(), UUID.randomUUID());
+        Wallet newWallet = new Wallet(voucher, anotherCustomer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        walletService.create(newWallet);
         walletService.deleteByCustomerId(newWallet.getCustomerId());
 
         List<Wallet> retrieveWalletList = walletService.findAll();
@@ -244,11 +252,12 @@ class WalletServiceTest {
     @Test
     @DisplayName("없는 유저id로 wallet을 지울 수 없다.")
     @Order(13)
+    @Disabled
     void deleteByCustomerIdError() {
 
         Customer anotherCustomer = new Customer(UUID.randomUUID(), "choi2", "choi2@naver.com");
         Wallet newWallet = new Wallet(voucher, anotherCustomer, UUID.randomUUID(), LocalDateTime.now());
-
+        walletService.deleteByCustomerId(newWallet.getCustomerId());
         assertThrows(EntityNotFoundException.class, () ->walletService.deleteByCustomerId(newWallet.getCustomerId()));
     }
 
@@ -261,7 +270,8 @@ class WalletServiceTest {
         VoucherType voucherType = VoucherType.FIXEDAMOUNT;
         Voucher anotherVoucher = voucherType.createVoucher(UUID.randomUUID(), 21L, LocalDateTime.now());
         voucherRepository.insert(anotherVoucher);
-        Wallet newWallet = walletService.testCreate(customer.getCustomerId(), anotherVoucher.getVoucherId(), UUID.randomUUID());
+        Wallet newWallet = new Wallet(anotherVoucher, customer, UUID.randomUUID(), LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        walletService.create(newWallet);
         walletService.deleteById(newWallet.getWalletId());
         List<Wallet> retrieveWalletList = walletService.findAll();
 

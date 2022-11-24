@@ -24,7 +24,6 @@ public class Customer {
         this.name = name;
         this.email = email;
         this.createdAt = LocalDateTime.now();
-
     }
 
     public Customer(UUID customerId, String name, String email, LocalDateTime createdAt) {
@@ -33,7 +32,6 @@ public class Customer {
         this.customerId = customerId;
         this.email = email;
         this.createdAt = createdAt;
-
     }
 
     public Customer(UUID customerId, String name, String email, LocalDateTime createdAt, CustomerType customerType) {
@@ -43,7 +41,6 @@ public class Customer {
         this.email = email;
         this.createdAt = createdAt;
         this.customerType = customerType;
-
     }
 
     private void validate(String name, String email) {

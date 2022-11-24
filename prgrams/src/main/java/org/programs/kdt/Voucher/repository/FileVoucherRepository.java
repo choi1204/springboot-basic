@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -100,6 +101,11 @@ public class FileVoucherRepository implements VoucherRepository, InitializingBea
     @Override
     public boolean existId(UUID customerId) {
         return storage.containsKey(customerId);
+    }
+
+    @Override
+    public List<Voucher> findByLocalDate(LocalDate searchTime) {
+        return null;
     }
 
     private void fileWriteByVoucherList() {

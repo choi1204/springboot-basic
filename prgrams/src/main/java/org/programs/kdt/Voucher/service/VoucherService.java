@@ -9,6 +9,7 @@ import org.programs.kdt.Voucher.domain.VoucherType;
 import org.programs.kdt.Voucher.repository.VoucherRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,39 +18,43 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VoucherService {
 
-  private final VoucherRepository voucherRepository;
+    private final VoucherRepository voucherRepository;
 
-  public Voucher insert(Voucher voucher) {
-    boolean isId = voucherRepository.existId(voucher.getVoucherId());
-    if (!isId) {
-      return voucherRepository.insert(voucher);
-    } else {
-      throw new DuplicationException(ErrorCode.DUPLICATION_VOUCHER_ID);
+    public Voucher insert(Voucher voucher) {
+        boolean isId = voucherRepository.existId(voucher.getVoucherId());
+        if (!isId) {
+            return voucherRepository.insert(voucher);
+        } else {
+            throw new DuplicationException(ErrorCode.DUPLICATION_VOUCHER_ID);
+        }
     }
-  }
 
-  public List<Voucher> findAll() {
-    return voucherRepository.findAll();
-  }
-
-  public void delete(UUID uuid) {
-    boolean isId = voucherRepository.existId(uuid);
-    if (isId) {
-      voucherRepository.delete(uuid);
-    } else {
-      throw new EntityNotFoundException(ErrorCode.NOT_FOUND_VOUCHER_ID);
+    public List<Voucher> findAll() {
+        return voucherRepository.findAll();
     }
-  }
 
-  public List<Voucher> findByType(VoucherType voucherType) {
-    return voucherRepository.findByType(voucherType);
-  }
+    public void delete(UUID uuid) {
+        boolean isId = voucherRepository.existId(uuid);
+        if (isId) {
+            voucherRepository.delete(uuid);
+        } else {
+            throw new EntityNotFoundException(ErrorCode.NOT_FOUND_VOUCHER_ID);
+        }
+    }
 
-  public Optional<Voucher> findById(UUID voucherId) {
-    return voucherRepository.findById(voucherId);
-  }
+    public List<Voucher> findByType(VoucherType voucherType) {
+        return voucherRepository.findByType(voucherType);
+    }
 
-  public boolean existVoucherId(UUID voucherId) {
-    return voucherRepository.existId(voucherId);
-  }
+    public Optional<Voucher> findById(UUID voucherId) {
+        return voucherRepository.findById(voucherId);
+    }
+
+    public boolean existVoucherId(UUID voucherId) {
+        return voucherRepository.existId(voucherId);
+    }
+
+    public List<Voucher> findLocalDate(LocalDate localDate) {
+        return voucherRepository.findByLocalDate(localDate);
+    }
 }

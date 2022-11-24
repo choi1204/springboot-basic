@@ -8,6 +8,7 @@ import org.programs.kdt.Voucher.domain.VoucherType;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,11 @@ public class MemoryVoucherRepository implements VoucherRepository {
     @Override
     public boolean existId(UUID customerId) {
         return storage.containsKey(customerId);
+    }
+
+    @Override
+    public List<Voucher> findByLocalDate(LocalDate searchTime) {
+        return null;
     }
 
 

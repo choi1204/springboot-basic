@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.programs.kdt.Exception.DuplicationException;
 import org.programs.kdt.Exception.EntityNotFoundException;
 import org.programs.kdt.Exception.ErrorCode;
+import org.programs.kdt.Wallet.WalletService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,59 +15,66 @@ import java.util.UUID;
 @Service
 public class CustomerService {
 
-  private final CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-  public List<Customer> findAllBlackList() {
-    return customerRepository.findByType("blacklist");
-  }
+    private final WalletService walletService;
 
-  public Customer save(Customer customer) {
-    boolean isId = customerRepository.existId(customer.getCustomerId());
-    boolean isEmail = customerRepository.existEmail(customer.getEmail());
-    if (!(isEmail || isId)) {
-      return customerRepository.insert(customer);
-    } else if(isEmail) {
-      throw new DuplicationException(ErrorCode.DUPLICATION_CUSTOMER_EMAIL);
-    }else {
-      throw new DuplicationException(ErrorCode.DUPLICATION_CUSTOMER_ID);
+    public List<Customer> findAllBlackList() {
+        return customerRepository.findByType("blacklist");
     }
-  }
 
-  public List<Customer> findAll() {
-    return customerRepository.findAll();
-  }
-
-  public Optional<Customer> findByEmail(String email) {
-      return customerRepository.findByEmail(email);
-  }
-
-  public void deleteByEmail(String email) {
-    boolean isEmail = customerRepository.existEmail(email);
-    if (isEmail) {
-      customerRepository.deleteByEmail(email);
-    } else {
-      throw new EntityNotFoundException(ErrorCode.DUPLICATION_CUSTOMER_EMAIL);
+    public Customer save(Customer customer) {
+        boolean isId = customerRepository.existId(customer.getCustomerId());
+        boolean isEmail = customerRepository.existEmail(customer.getEmail());
+        if (!(isEmail || isId)) {
+            return customerRepository.insert(customer);
+        } else if(isEmail) {
+            throw new DuplicationException(ErrorCode.DUPLICATION_CUSTOMER_EMAIL);
+        }else {
+            throw new DuplicationException(ErrorCode.DUPLICATION_CUSTOMER_ID);
+        }
     }
-  }
 
-  public Customer update(Customer customer) {
-    boolean isId = customerRepository.existId(customer.getCustomerId());
-    if (isId) {
-      return customerRepository.update(customer);
-    } else {
-      throw new EntityNotFoundException(ErrorCode.NOT_FOUND_CUSTOMER_ID);
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
     }
-  }
 
-  public Optional<Customer> findById(UUID customerId) {
-      return customerRepository.findById(customerId);
-  }
+    public Optional<Customer> findByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
 
-  public boolean existEmail(String email) {
-    return customerRepository.existEmail(email);
-  }
+    public void deleteByEmail(String email) {
+        boolean isEmail = customerRepository.existEmail(email);
+        if (isEmail) {
+            customerRepository.deleteByEmail(email);
+        } else {
+            throw new EntityNotFoundException(ErrorCode.DUPLICATION_CUSTOMER_EMAIL);
+        }
+    }
 
-  public boolean existId(UUID customerId) {
-    return customerRepository.existId(customerId);
-  }
+    public Customer update(Customer customer) {
+        boolean isId = customerRepository.existId(customer.getCustomerId());
+        if (isId) {
+            return customerRepository.update(customer);
+        } else {
+            throw new EntityNotFoundException(ErrorCode.NOT_FOUND_CUSTOMER_ID);
+        }
+    }
+
+    public Optional<Customer> findById(UUID customerId) {
+        return customerRepository.findById(customerId);
+    }
+
+    public boolean existEmail(String email) {
+        return customerRepository.existEmail(email);
+    }
+
+    public boolean existId(UUID customerId) {
+        return customerRepository.existId(customerId);
+    }
+
+    public void delete(UUID customerId) {
+        walletService.deleteByCustomerId(customerId);
+        customerRepository.delete(customerId);
+    }
 }

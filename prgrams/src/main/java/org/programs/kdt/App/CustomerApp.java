@@ -1,4 +1,4 @@
-package org.programs.kdt;
+package org.programs.kdt.App;
 
 import lombok.RequiredArgsConstructor;
 import org.programs.kdt.Command.CustomerMenu;
@@ -69,24 +69,22 @@ public class CustomerApp {
     private void customerSetBlacklistProcess() {
         String email = console.input("블랙리스트를 등록할 이메일을 입력해주세요.");
         Optional<Customer> findCustomer = customerService.findByEmail(email);
-        if (findCustomer.isPresent()) {
-            Customer customer = findCustomer.get();
-            customer.setBlacklist();
-            customerService.update(customer);
-        } else {
-            console.output(NOT_FOUND_EMAIL.getMessage());
-        }
+        findCustomer.ifPresentOrElse(
+                customer -> {
+                    customer.setBlacklist();
+                    customerService.update(customer);
+                    },
+                () -> console.output(NOT_FOUND_EMAIL.getMessage())
+        );
     }
 
     private void customerFindEmailProcess() {
         String email = console.input("이메일을 입력해주세요.");
         Optional<Customer> findCustomer = customerService.findByEmail(email);
-        if (findCustomer.isPresent()) {
-            Customer customer = findCustomer.get();
-            console.printCustomer(customer);
-        } else {
-            console.output(NOT_FOUND_EMAIL.getMessage());
-        }
+        findCustomer.ifPresentOrElse(
+                customer -> console.printCustomer(customer),
+                () -> console.output(NOT_FOUND_EMAIL.getMessage())
+        );
     }
 
     private void customerBlacklistProcess() {
@@ -97,25 +95,24 @@ public class CustomerApp {
     private void customerUpdateProcess() {
         String email = console.input("찾을 유저의 이메일을 입력해주세요");
         Optional<Customer> findCustomer = customerService.findByEmail(email);
-        if (findCustomer.isPresent()) {
-            Customer customer = findCustomer.get();
-            String name = console.input("변경할 이름을 입력해주세요");
-            customer.changeName(name);
-            customerService.update(customer);
-        } else {
-            console.output(NOT_FOUND_EMAIL.getMessage());
-        }
+        findCustomer.ifPresentOrElse(
+                customer -> {
+                    String name = console.input("변경할 이름을 입력해주세요");
+                    customer.changeName(name);
+                    customerService.update(customer);
+                } ,
+                () -> console.output(NOT_FOUND_EMAIL.getMessage())
+        );
 
     }
 
     private void customerDeleteProcess() {
         String email = console.input("삭제하실 이메일을 입력해주세요.");
         Optional<Customer> customer = customerService.findByEmail(email);
-        if (customer.isPresent()) {
-            customerService.deleteByEmail(email);
-        } else {
-            console.output(NOT_FOUND_EMAIL.getMessage());
-        }
+        customer.ifPresentOrElse(
+                existCustomer -> customerService.deleteByEmail(email),
+                () -> console.output(NOT_FOUND_EMAIL.getMessage())
+        );
     }
 
     private void customerFindAllProcess() {
@@ -125,8 +122,8 @@ public class CustomerApp {
 
     private void customerCreateProcess() {
         try {
-        customerService.save(inputCustomer());
-        console.output("저장 되었습니다.");
+          customerService.save(inputCustomer());
+          console.output("저장 되었습니다.");
         } catch (RuntimeException e) {
             logger.error(e.getMessage());
         }
